@@ -29,7 +29,19 @@ header.top h1{font:600 2.15rem/1.08 Georgia,"Times New Roman",serif;
   margin:0;overflow-wrap:break-word;}
 @media(min-width:480px){header.top h1{font-size:2.6rem;}}
 header.top p{color:var(--muted);margin:10px 0 0;font-size:.95rem;}
+header.top .links{margin-top:14px;}
+header.top .links a{display:inline-block;color:var(--accent);text-decoration:none;
+  font-weight:600;font-size:.9rem;border:1px solid var(--line);border-radius:999px;
+  padding:7px 16px;}
+header.top .links a:hover{border-color:var(--accent);}
 .rule{height:1px;background:var(--line);margin:26px 0;}
+.floating{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  text-align:center;margin:6px auto 2px;padding:12px 18px;max-width:520px;
+  border:1px dashed var(--line);border-radius:999px;color:var(--muted);font-size:.9rem;}
+.floating .ftag{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent-ink);background:var(--tag);padding:3px 10px;border-radius:999px;font-weight:700;}
+.floating .fnames{font-weight:600;color:var(--ink);}
+.floating .fnote{font-size:.82rem;}
 .group{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   padding:20px 18px;margin:22px 0;}
 .ghead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
@@ -60,6 +72,24 @@ td.lk{white-space:nowrap;}
 td.lk a{display:inline-block;min-width:26px;text-align:center;text-decoration:none;
   color:var(--accent);font-weight:600;padding:2px 5px;border-radius:6px;}
 td.lk a:hover{background:var(--accent);color:var(--accent-ink);}
+.bintro{text-align:center;max-width:560px;margin:0 auto;}
+.bintro h2{font:600 1.6rem Georgia,serif;margin:0 0 6px;}
+.bintro p{color:var(--muted);font-size:.9rem;margin:0;}
+.bintro a{color:var(--accent);}
+.group.bonus{padding-top:16px;}
+table.btbl{width:100%;border-collapse:collapse;font-size:.86rem;}
+table.btbl th{text-align:left;color:var(--muted);font-weight:600;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;border-bottom:1px solid var(--line);}
+table.btbl td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle;}
+table.btbl td.pc{font-weight:600;line-height:1.25;}
+table.btbl td.pc .meta{display:block;font-weight:400;color:var(--muted);font-size:.76rem;margin-top:2px;}
+table.btbl td.diff{white-space:nowrap;color:var(--muted);font-size:.8rem;}
+.pips{letter-spacing:1px;color:var(--line);}
+.pips .on{color:var(--accent);}
+table.btbl td.lk{white-space:nowrap;text-align:right;}
+table.btbl td.lk a{display:inline-block;min-width:26px;text-align:center;text-decoration:none;
+  color:var(--accent);font-weight:600;padding:2px 5px;border-radius:6px;}
+table.btbl td.lk a:hover{background:var(--accent);color:var(--accent-ink);}
 footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:34px;line-height:1.7;}
 footer a{color:var(--accent);}
 </style>
@@ -71,6 +101,7 @@ footer a{color:var(--accent);}
     <h1>Boccherini Sampler</h1>
     <p>Tap your instrument to download every part for your group in one PDF —
        works are bookmarked in program order. Individual works are below each group.</p>
+    <p class="links"><a href="https://docs.google.com/spreadsheets/d/1QsMy2oQVhYf2KTSVJVKT4CxvkMuD9i87AHJLUqsRMUA/edit?gid=0#gid=0" target="_blank" rel="noopener">Difficulty assessment&nbsp;↗</a></p>
   </header>
   <div class="rule"></div>
 
@@ -79,7 +110,7 @@ footer a{color:var(--accent);}
         <h2>Group 1</h2>
         <span class="tag">Harder cello</span>
       </div>
-      <p class="players">Jason / Leah, Kath, Josh  ·  Roberta / Grant (floating)</p>
+      <p class="players">Jason / Leah, Kath, Josh</p>
       <div class="bundles">
         <a class="bundle" href="parts/Group1-V1.pdf" download><span class="inst">Violin I</span><span class="pp">32 pp · PDF</span></a><a class="bundle" href="parts/Group1-V2.pdf" download><span class="inst">Violin II</span><span class="pp">27 pp · PDF</span></a><a class="bundle" href="parts/Group1-VA.pdf" download><span class="inst">Viola</span><span class="pp">20 pp · PDF</span></a><a class="bundle" href="parts/Group1-VC.pdf" download><span class="inst">Cello</span><span class="pp">22 pp · PDF</span></a>
       </div>
@@ -91,6 +122,11 @@ footer a{color:var(--accent);}
         </table>
       </details>
     </section>
+    <div class="floating">
+      <span class="ftag">Floating</span>
+      <span class="fnames">Roberta / Grant</span>
+      <span class="fnote">— play with either group</span>
+    </div>
     <section class="group">
       <div class="ghead">
         <h2>Group 2</h2>
@@ -107,6 +143,30 @@ footer a{color:var(--accent);}
           <tbody><tr><td class="pc">Op. 2 No. 6 (G.164)</td><td class="src">LilyPond</td><td class="lk"><a href="pieces/Op02-No6-G164-V1.pdf" download>V1</a> <a href="pieces/Op02-No6-G164-V2.pdf" download>V2</a> <a href="pieces/Op02-No6-G164-VA.pdf" download>VA</a> <a href="pieces/Op02-No6-G164-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 8 No. 1 (G.165)</td><td class="src">LilyPond</td><td class="lk"><a href="pieces/Op08-No1-G165-V1.pdf" download>V1</a> <a href="pieces/Op08-No1-G165-V2.pdf" download>V2</a> <a href="pieces/Op08-No1-G165-VA.pdf" download>VA</a> <a href="pieces/Op08-No1-G165-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 8 No. 3 (G.167)</td><td class="src">LilyPond</td><td class="lk"><a href="pieces/Op08-No3-G167-V1.pdf" download>V1</a> <a href="pieces/Op08-No3-G167-V2.pdf" download>V2</a> <a href="pieces/Op08-No3-G167-VA.pdf" download>VA</a> <a href="pieces/Op08-No3-G167-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 15 No. 1 (G.177)</td><td class="src">LilyPond</td><td class="lk"><a href="pieces/Op15-No1-G177-V1.pdf" download>V1</a> <a href="pieces/Op15-No1-G177-V2.pdf" download>V2</a> <a href="pieces/Op15-No1-G177-VA.pdf" download>VA</a> <a href="pieces/Op15-No1-G177-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 24 No. 6 (G.194)</td><td class="src">LilyPond</td><td class="lk"><a href="pieces/Op24-No6-G194-V1.pdf" download>V1</a> <a href="pieces/Op24-No6-G194-V2.pdf" download>V2</a> <a href="pieces/Op24-No6-G194-VA.pdf" download>VA</a> <a href="pieces/Op24-No6-G194-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 44 No. 4 (G.223)</td><td class="src">IMSLP</td><td class="lk"><a href="pieces/Op44-No4-G223-V1.pdf" download>V1</a> <a href="pieces/Op44-No4-G223-V2.pdf" download>V2</a> <a href="pieces/Op44-No4-G223-VA.pdf" download>VA</a> <a href="pieces/Op44-No4-G223-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 58 No. 4 (G.245)</td><td class="src">IMSLP</td><td class="lk"><a href="pieces/Op58-No4-G245-V1.pdf" download>V1</a> <a href="pieces/Op58-No4-G245-V2.pdf" download>V2</a> <a href="pieces/Op58-No4-G245-VA.pdf" download>VA</a> <a href="pieces/Op58-No4-G245-VC.pdf" download>VC</a></td></tr></tbody>
         </table>
       </details>
+    </section>
+
+    <div class="rule"></div>
+    <div class="bintro">
+      <h2>Bonus quartets</h2>
+      <p>More quartets we have parts for, beyond tonight's two programs — graded
+         (cello part) from the <a href="https://docs.google.com/spreadsheets/d/1QsMy2oQVhYf2KTSVJVKT4CxvkMuD9i87AHJLUqsRMUA/edit?gid=0#gid=0" target="_blank" rel="noopener">difficulty assessment</a>.
+         Grab any part.</p>
+    </div>
+    
+    <section class="group bonus">
+      <div class="ghead"><h2>Bonus · Easier</h2><span class="tag">Difficulty 1–3</span></div>
+      <table class="btbl">
+        <thead><tr><th>Work</th><th>Cello diff.</th><th>Parts</th></tr></thead>
+        <tbody><tr><td class="pc">Op. 2 No. 1 (G.159)<span class="meta">C minor · 17–18 min</span></td><td class="diff" title="Cello difficulty 3/5"><span class="pips"><span class="on">●●●</span>●●</span> 3/5</td><td class="lk"><a href="pieces/Op02-No1-G159-V1.pdf" download>V1</a> <a href="pieces/Op02-No1-G159-V2.pdf" download>V2</a> <a href="pieces/Op02-No1-G159-VA.pdf" download>VA</a> <a href="pieces/Op02-No1-G159-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 2 No. 2 (G.160)<span class="meta">B♭ major · 12–13 min</span></td><td class="diff" title="Cello difficulty 3/5"><span class="pips"><span class="on">●●●</span>●●</span> 3/5</td><td class="lk"><a href="pieces/Op02-No2-G160-V1.pdf" download>V1</a> <a href="pieces/Op02-No2-G160-V2.pdf" download>V2</a> <a href="pieces/Op02-No2-G160-VA.pdf" download>VA</a> <a href="pieces/Op02-No2-G160-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 8 No. 6 (G.170)<span class="meta">A major · 15–16 min</span></td><td class="diff" title="Cello difficulty 2/5"><span class="pips"><span class="on">●●</span>●●●</span> 2/5</td><td class="lk"><a href="pieces/Op08-No6-G170-V1.pdf" download>V1</a> <a href="pieces/Op08-No6-G170-V2.pdf" download>V2</a> <a href="pieces/Op08-No6-G170-VA.pdf" download>VA</a> <a href="pieces/Op08-No6-G170-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 22 No. 1 (G.183)<span class="meta">C major · 7–8 min</span></td><td class="diff" title="Cello difficulty 2/5"><span class="pips"><span class="on">●●</span>●●●</span> 2/5</td><td class="lk"><a href="pieces/Op22-No1-G183-V1.pdf" download>V1</a> <a href="pieces/Op22-No1-G183-V2.pdf" download>V2</a> <a href="pieces/Op22-No1-G183-VA.pdf" download>VA</a> <a href="pieces/Op22-No1-G183-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 24 No. 1 (G.189)<span class="meta">D major · 17–18 min</span></td><td class="diff" title="Cello difficulty 3/5"><span class="pips"><span class="on">●●●</span>●●</span> 3/5</td><td class="lk"><a href="pieces/Op24-No1-G189-V1.pdf" download>V1</a> <a href="pieces/Op24-No1-G189-V2.pdf" download>V2</a> <a href="pieces/Op24-No1-G189-VA.pdf" download>VA</a> <a href="pieces/Op24-No1-G189-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 39 (G.213)<span class="meta">A major · 19–20 min</span></td><td class="diff" title="Cello difficulty 3/5"><span class="pips"><span class="on">●●●</span>●●</span> 3/5</td><td class="lk"><a href="pieces/Op39-G213-V1.pdf" download>V1</a> <a href="pieces/Op39-G213-V2.pdf" download>V2</a> <a href="pieces/Op39-G213-VA.pdf" download>VA</a> <a href="pieces/Op39-G213-VC.pdf" download>VC</a></td></tr></tbody>
+      </table>
+    </section>
+    
+    <section class="group bonus">
+      <div class="ghead"><h2>Bonus · Harder</h2><span class="tag">Difficulty 4–5</span></div>
+      <table class="btbl">
+        <thead><tr><th>Work</th><th>Cello diff.</th><th>Parts</th></tr></thead>
+        <tbody><tr><td class="pc">Op. 2 No. 5 (G.163)<span class="meta">E major · 12–13 min</span></td><td class="diff" title="Cello difficulty 4/5"><span class="pips"><span class="on">●●●●</span>●</span> 4/5</td><td class="lk"><a href="pieces/Op02-No5-G163-V1.pdf" download>V1</a> <a href="pieces/Op02-No5-G163-V2.pdf" download>V2</a> <a href="pieces/Op02-No5-G163-VA.pdf" download>VA</a> <a href="pieces/Op02-No5-G163-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 8 No. 4 (G.168)<span class="meta">G minor · 14–15 min</span></td><td class="diff" title="Cello difficulty 4/5"><span class="pips"><span class="on">●●●●</span>●</span> 4/5</td><td class="lk"><a href="pieces/Op08-No4-G168-V1.pdf" download>V1</a> <a href="pieces/Op08-No4-G168-V2.pdf" download>V2</a> <a href="pieces/Op08-No4-G168-VA.pdf" download>VA</a> <a href="pieces/Op08-No4-G168-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 22 No. 3 (G.185)<span class="meta">E♭ major · 10–11 min</span></td><td class="diff" title="Cello difficulty 5/5"><span class="pips"><span class="on">●●●●●</span></span> 5/5</td><td class="lk"><a href="pieces/Op22-No3-G185-V1.pdf" download>V1</a> <a href="pieces/Op22-No3-G185-V2.pdf" download>V2</a> <a href="pieces/Op22-No3-G185-VA.pdf" download>VA</a> <a href="pieces/Op22-No3-G185-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 24 No. 5 (G.193)<span class="meta">C minor · 16–17 min</span></td><td class="diff" title="Cello difficulty 5/5"><span class="pips"><span class="on">●●●●●</span></span> 5/5</td><td class="lk"><a href="pieces/Op24-No5-G193-V1.pdf" download>V1</a> <a href="pieces/Op24-No5-G193-V2.pdf" download>V2</a> <a href="pieces/Op24-No5-G193-VA.pdf" download>VA</a> <a href="pieces/Op24-No5-G193-VC.pdf" download>VC</a></td></tr><tr><td class="pc">Op. 58 No. 2 (G.243)<span class="meta">E♭ major · 20–21 min</span></td><td class="diff" title="Cello difficulty 4/5"><span class="pips"><span class="on">●●●●</span>●</span> 4/5</td><td class="lk"><a href="pieces/Op58-No2-G243-V1.pdf" download>V1</a> <a href="pieces/Op58-No2-G243-V2.pdf" download>V2</a> <a href="pieces/Op58-No2-G243-VA.pdf" download>VA</a> <a href="pieces/Op58-No2-G243-VC.pdf" download>VC</a></td></tr></tbody>
+      </table>
     </section>
   <footer>
     Parts typeset in <strong>LilyPond</strong> where available (Op.&nbsp;2–26),

@@ -15,6 +15,18 @@ Op. 8/2, 15/4, 22/4, 24/4, 33/5, 58/5
 **Group 2 — easier cello** (Casey / Stephen, Jon, Zon)
 Op. 2/6, 8/1, 8/3, 15/1, 24/6, 44/4, 58/4
 
+**Floating:** Roberta / Grant (either group)
+
+**Bonus quartets** — every quartet in the difficulty sheet that we have parts
+for and that isn't already assigned above, split into Easier (cello difficulty
+1–3) and Harder (4–5), with per-part downloads. Individual parts only (no
+merged bundles).
+
+### Other pages
+
+- `qr.html` — a scannable QR code + the site URL, laid out to print cleanly on
+  a single US-Letter sheet (`@media print`).
+
 ## Sources
 
 Parts are LilyPond-typeset editions where available (Boccherini Op. 2–26).

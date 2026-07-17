@@ -23,9 +23,15 @@ HERE = Path(__file__).resolve().parent          # boccherini-sampler/
 SCORES = HERE.parent                            # Scores/
 LP = SCORES / "Boccherini-lilypond"
 IMSLP = SCORES / "Boccherini-imslp"
+IMSLP_OPUS = SCORES / "Boccherini-imslp-opus"
 KM = SCORES / "Boccherini-KM"
 
 INSTRUMENTS = ["V1", "V2", "VA", "VC"]
+
+SITE_URL = "https://jsundram.github.io/boccherini-sampler/"
+DIFFICULTY_URL = ("https://docs.google.com/spreadsheets/d/"
+                  "1QsMy2oQVhYf2KTSVJVKT4CxvkMuD9i87AHJLUqsRMUA/edit?gid=0#gid=0")
+FLOATING = "Roberta / Grant"  # play with either group
 
 # Source helpers -------------------------------------------------------------
 def lily(opus, no, g):
@@ -48,12 +54,17 @@ def op33_5():
     return {p: (IMSLP / f"Boccherini-033-all-{p}.pdf", OP33_5_RANGES[p])
             for p in INSTRUMENTS}
 
+def leduc39():
+    # Op.39 (G.213) is a single quartet; the LeDuc bundle is that whole quartet.
+    return {p: (IMSLP_OPUS / f"Boccherini-039-all-{p}.LeDuc.pdf", None)
+            for p in INSTRUMENTS}
+
 # Program --------------------------------------------------------------------
 # Each piece: (title, slug, source-dict, source-label)
 GROUPS = {
     "Group 1": {
         "subtitle": "Harder cello",
-        "players": "Jason / Leah, Kath, Josh  ·  Roberta / Grant (floating)",
+        "players": "Jason / Leah, Kath, Josh",
         "pieces": [
             ("Op. 8 No. 2 (G.166)",  "Op08-No2-G166", lily(8, 2, 166),  "LilyPond"),
             ("Op. 15 No. 4 (G.180)", "Op15-No4-G180", lily(15, 4, 180), "LilyPond"),
@@ -79,6 +90,24 @@ GROUPS = {
 }
 
 INSTRUMENT_LABEL = {"V1": "Violin I", "V2": "Violin II", "VA": "Viola", "VC": "Cello"}
+
+# Bonus works — every quartet in the difficulty sheet that we have parts for and
+# that ISN'T already assigned to Group 1 or 2. Difficulty/key/duration are the
+# cello-part figures from the sheet. Split later into Easier (<=3) / Harder (>=4).
+# (title, slug, sources, source-label, difficulty, key, duration)
+BONUS = [
+    ("Op. 2 No. 1 (G.159)",  "Op02-No1-G159", lily(2, 1, 159),  "LilyPond", 3, "C minor",  "17–18 min"),
+    ("Op. 2 No. 2 (G.160)",  "Op02-No2-G160", lily(2, 2, 160),  "LilyPond", 3, "B♭ major", "12–13 min"),
+    ("Op. 2 No. 5 (G.163)",  "Op02-No5-G163", lily(2, 5, 163),  "LilyPond", 4, "E major",  "12–13 min"),
+    ("Op. 8 No. 4 (G.168)",  "Op08-No4-G168", lily(8, 4, 168),  "LilyPond", 4, "G minor",  "14–15 min"),
+    ("Op. 8 No. 6 (G.170)",  "Op08-No6-G170", lily(8, 6, 170),  "LilyPond", 2, "A major",  "15–16 min"),
+    ("Op. 22 No. 1 (G.183)", "Op22-No1-G183", lily(22, 1, 183), "LilyPond", 2, "C major",  "7–8 min"),
+    ("Op. 22 No. 3 (G.185)", "Op22-No3-G185", lily(22, 3, 185), "LilyPond", 5, "E♭ major", "10–11 min"),
+    ("Op. 24 No. 1 (G.189)", "Op24-No1-G189", lily(24, 1, 189), "LilyPond", 3, "D major",  "17–18 min"),
+    ("Op. 24 No. 5 (G.193)", "Op24-No5-G193", lily(24, 5, 193), "LilyPond", 5, "C minor",  "16–17 min"),
+    ("Op. 39 (G.213)",       "Op39-G213",     leduc39(),        "IMSLP",    3, "A major",  "19–20 min"),
+    ("Op. 58 No. 2 (G.243)", "Op58-No2-G243", km58(2),          "IMSLP",    4, "E♭ major", "20–21 min"),
+]
 
 
 def add_source(writer, src, page_range, bookmark):
@@ -128,6 +157,19 @@ def main():
             bundle_pages[(gslug, inst)] = n
             print(f"{out.name}: {n} pages")
 
+    # bonus works: individual per-work parts only (no merged bundles)
+    for title, slug, sources, _lbl, *_meta in BONUS:
+        for inst in INSTRUMENTS:
+            src, rng = sources[inst]
+            if not src.exists():
+                missing.append(str(src))
+                continue
+            pw = PdfWriter()
+            add_source(pw, src, rng, title)
+            with open(pieces_dir / f"{slug}-{inst}.pdf", "wb") as fh:
+                pw.write(fh)
+    print(f"bonus: {len(BONUS)} works -> individual parts")
+
     if missing:
         print("\nMISSING SOURCES:")
         for m in missing:
@@ -135,7 +177,18 @@ def main():
         raise SystemExit(1)
 
     write_index(bundle_pages)
+    write_qr()
     print("\nBuild OK")
+
+
+def write_qr():
+    import segno
+    qr = segno.make(SITE_URL, error="m")
+    # high-res PNG data URI -> self-contained and crisp when printed
+    uri = qr.png_data_uri(scale=20, border=3, dark="#241f1a", light="#ffffff")
+    html = QR_TEMPLATE.replace("__QR__", uri).replace("__URL__", SITE_URL)
+    (HERE / "qr.html").write_text(html, encoding="utf-8")
+    print(f"qr.html written ({qr.version=}, {len(uri)//1024} KB)")
 
 
 # ---------------------------------------------------------------------------
@@ -184,7 +237,58 @@ def write_index(bundle_pages):
       </details>
     </section>""")
 
-    html = TEMPLATE.replace("__SECTIONS__", "".join(sections))
+    floating = f"""
+    <div class="floating">
+      <span class="ftag">Floating</span>
+      <span class="fnames">{esc(FLOATING)}</span>
+      <span class="fnote">— play with either group</span>
+    </div>"""
+    body = (floating.join(sections) if len(sections) == 2
+            else "".join(sections) + floating)
+
+    # ---- bonus section --------------------------------------------------
+    def bonus_card(label, tag, works):
+        rows = []
+        for title, slug, _src, _lbl, diff, key, dur in works:
+            pips = (f'<span class="on">{"●" * diff}</span>'
+                    f'{"●" * (5 - diff)}')
+            links = " ".join(
+                f'<a href="pieces/{slug}-{inst}.pdf" download>{inst}</a>'
+                for inst in INSTRUMENTS
+            )
+            rows.append(
+                f'<tr><td class="pc">{esc(title)}'
+                f'<span class="meta">{esc(key)} · {esc(dur)}</span></td>'
+                f'<td class="diff" title="Cello difficulty {diff}/5">'
+                f'<span class="pips">{pips}</span> {diff}/5</td>'
+                f'<td class="lk">{links}</td></tr>'
+            )
+        return f"""
+    <section class="group bonus">
+      <div class="ghead"><h2>{esc(label)}</h2><span class="tag">{esc(tag)}</span></div>
+      <table class="btbl">
+        <thead><tr><th>Work</th><th>Cello diff.</th><th>Parts</th></tr></thead>
+        <tbody>{''.join(rows)}</tbody>
+      </table>
+    </section>"""
+
+    easier = [w for w in BONUS if w[4] <= 3]
+    harder = [w for w in BONUS if w[4] >= 4]
+    bonus_html = f"""
+    <div class="rule"></div>
+    <div class="bintro">
+      <h2>Bonus quartets</h2>
+      <p>More quartets we have parts for, beyond tonight's two programs — graded
+         (cello part) from the <a href="{DIFFICULTY_URL}" target="_blank" rel="noopener">difficulty assessment</a>.
+         Grab any part.</p>
+    </div>
+    {bonus_card("Bonus · Easier", "Difficulty 1–3", easier)}
+    {bonus_card("Bonus · Harder", "Difficulty 4–5", harder)}"""
+
+    html = (TEMPLATE
+            .replace("__SECTIONS__", body)
+            .replace("__BONUS__", bonus_html)
+            .replace("__DIFFICULTY_URL__", DIFFICULTY_URL))
     (HERE / "index.html").write_text(html, encoding="utf-8")
     print("index.html written")
 
@@ -220,7 +324,19 @@ header.top h1{font:600 2.15rem/1.08 Georgia,"Times New Roman",serif;
   margin:0;overflow-wrap:break-word;}
 @media(min-width:480px){header.top h1{font-size:2.6rem;}}
 header.top p{color:var(--muted);margin:10px 0 0;font-size:.95rem;}
+header.top .links{margin-top:14px;}
+header.top .links a{display:inline-block;color:var(--accent);text-decoration:none;
+  font-weight:600;font-size:.9rem;border:1px solid var(--line);border-radius:999px;
+  padding:7px 16px;}
+header.top .links a:hover{border-color:var(--accent);}
 .rule{height:1px;background:var(--line);margin:26px 0;}
+.floating{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  text-align:center;margin:6px auto 2px;padding:12px 18px;max-width:520px;
+  border:1px dashed var(--line);border-radius:999px;color:var(--muted);font-size:.9rem;}
+.floating .ftag{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent-ink);background:var(--tag);padding:3px 10px;border-radius:999px;font-weight:700;}
+.floating .fnames{font-weight:600;color:var(--ink);}
+.floating .fnote{font-size:.82rem;}
 .group{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   padding:20px 18px;margin:22px 0;}
 .ghead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
@@ -251,6 +367,24 @@ td.lk{white-space:nowrap;}
 td.lk a{display:inline-block;min-width:26px;text-align:center;text-decoration:none;
   color:var(--accent);font-weight:600;padding:2px 5px;border-radius:6px;}
 td.lk a:hover{background:var(--accent);color:var(--accent-ink);}
+.bintro{text-align:center;max-width:560px;margin:0 auto;}
+.bintro h2{font:600 1.6rem Georgia,serif;margin:0 0 6px;}
+.bintro p{color:var(--muted);font-size:.9rem;margin:0;}
+.bintro a{color:var(--accent);}
+.group.bonus{padding-top:16px;}
+table.btbl{width:100%;border-collapse:collapse;font-size:.86rem;}
+table.btbl th{text-align:left;color:var(--muted);font-weight:600;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.08em;padding:6px 8px;border-bottom:1px solid var(--line);}
+table.btbl td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle;}
+table.btbl td.pc{font-weight:600;line-height:1.25;}
+table.btbl td.pc .meta{display:block;font-weight:400;color:var(--muted);font-size:.76rem;margin-top:2px;}
+table.btbl td.diff{white-space:nowrap;color:var(--muted);font-size:.8rem;}
+.pips{letter-spacing:1px;color:var(--line);}
+.pips .on{color:var(--accent);}
+table.btbl td.lk{white-space:nowrap;text-align:right;}
+table.btbl td.lk a{display:inline-block;min-width:26px;text-align:center;text-decoration:none;
+  color:var(--accent);font-weight:600;padding:2px 5px;border-radius:6px;}
+table.btbl td.lk a:hover{background:var(--accent);color:var(--accent-ink);}
 footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:34px;line-height:1.7;}
 footer a{color:var(--accent);}
 </style>
@@ -262,15 +396,69 @@ footer a{color:var(--accent);}
     <h1>Boccherini Sampler</h1>
     <p>Tap your instrument to download every part for your group in one PDF —
        works are bookmarked in program order. Individual works are below each group.</p>
+    <p class="links"><a href="__DIFFICULTY_URL__" target="_blank" rel="noopener">Difficulty assessment&nbsp;↗</a></p>
   </header>
   <div class="rule"></div>
 __SECTIONS__
+__BONUS__
   <footer>
     Parts typeset in <strong>LilyPond</strong> where available (Op.&nbsp;2–26),
     otherwise IMSLP / public-domain scans.<br>
     Boccherini quartets · assembled for tonight's reading.
   </footer>
 </div>
+</body>
+</html>
+"""
+
+
+QR_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boccherini Sampler — Scan</title>
+<style>
+:root{ --ink:#241f1a; --muted:#6f6455; --accent:#7c2932; --bg:#f4efe6; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.card{width:100%;max-width:520px;text-align:center;}
+.eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 8px;font-weight:700;}
+h1{font:600 2.2rem/1.05 Georgia,"Times New Roman",serif;margin:0 0 6px;}
+.sub{color:var(--muted);margin:0 0 26px;}
+.qr{width:70%;max-width:340px;height:auto;margin:0 auto;display:block;
+  border-radius:12px;background:#fff;padding:14px;
+  box-shadow:0 1px 0 rgba(0,0,0,.06);}
+.url{margin:22px auto 0;font:600 1rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--ink);word-break:break-all;max-width:420px;}
+.hint{color:var(--muted);font-size:.9rem;margin-top:8px;}
+@media print{
+  @page{ size:letter; margin:0.6in; }
+  :root{ --bg:#fff; }
+  html,body{background:#fff;}
+  body{display:block;padding:0;min-height:0;}
+  .card{max-width:none;margin:1in auto 0;}
+  h1{font-size:32pt;}
+  .sub{font-size:13pt;margin-bottom:0.45in;}
+  .qr{width:3.8in;max-width:none;padding:0;box-shadow:none;border-radius:0;}
+  .url{font-size:15pt;margin-top:0.4in;}
+  .hint{font-size:11pt;}
+}
+</style>
+</head>
+<body>
+  <main class="card">
+    <p class="eyebrow">String Quartets · Reading Party</p>
+    <h1>Boccherini Sampler</h1>
+    <p class="sub">Scan to download your parts</p>
+    <img class="qr" src="__QR__" alt="QR code linking to __URL__" width="360" height="360">
+    <p class="url">__URL__</p>
+    <p class="hint">Point your phone camera at the code, or type the address above.</p>
+  </main>
 </body>
 </html>
 """

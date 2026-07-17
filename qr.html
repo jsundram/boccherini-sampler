@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boccherini Sampler — Scan</title>
+<style>
+:root{ --ink:#241f1a; --muted:#6f6455; --accent:#7c2932; --bg:#f4efe6; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.card{width:100%;max-width:520px;text-align:center;}
+.eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 8px;font-weight:700;}
+h1{font:600 2.2rem/1.05 Georgia,"Times New Roman",serif;margin:0 0 6px;}
+.sub{color:var(--muted);margin:0 0 26px;}
+.qr{width:70%;max-width:340px;height:auto;margin:0 auto;display:block;
+  border-radius:12px;background:#fff;padding:14px;
+  box-shadow:0 1px 0 rgba(0,0,0,.06);}
+.url{margin:22px auto 0;font:600 1rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--ink);word-break:break-all;max-width:420px;}
+.hint{color:var(--muted);font-size:.9rem;margin-top:8px;}
+@media print{
+  @page{ size:letter; margin:0.6in; }
+  :root{ --bg:#fff; }
+  html,body{background:#fff;}
+  body{display:block;padding:0;min-height:0;}
+  .card{max-width:none;margin:1in auto 0;}
+  h1{font-size:32pt;}
+  .sub{font-size:13pt;margin-bottom:0.45in;}
+  .qr{width:3.8in;max-width:none;padding:0;box-shadow:none;border-radius:0;}
+  .url{font-size:15pt;margin-top:0.4in;}
+  .hint{font-size:11pt;}
+}
+</style>
+</head>
+<body>
+  <main class="card">
+    <p class="eyebrow">String Quartets · Reading Party</p>
+    <h1>Boccherini Sampler</h1>
+    <p class="sub">Scan to download your parts</p>
+    <img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAwwAAAMMAQMAAADEsbI4AAAABlBMVEUkHxr////k8G9VAAADHklEQVR42u3dQW7bMBAFUKIX4P1vyRsoQOrG1MzQbRakEfRpYTSWrLfQ4ndIDtWu3cdoCAQCgUAgEAgEAoFAIBAIBAKBQPwkYrR4fH4XPlrrj+uflzy+q27w+86/2vYDgUAgEIj/h5iy+57pt1DvX9+N+WfhxOIGngUCgUAgELuye9xL7j/pPFfbfQ7mf7iB7EYgEAgE4nB2t7nufkT54reyG4FAIBCI92b3MpOfc9s9DZzLbgQCgUAgzmV3mK6+LU57PSVuvhuBQCAQiPPZnU6Mb34s7uxZIBAIBAKxIbtfHWGFWliAPpfmZRuaZ4FAIBAIxJ7sTqd6Wkn+PBG+q5edy24EAoFAIA7U3a+WmIeh8VCVz2kvuxEIBAKBOFB3h03Tcn93fd0oVqt3Y+YIBAKBQGzN7tz2NX88Lx6rX7TUPCa7EQgEAoHYm91V8/bf+sFygKeFbbIbgUAgEIgd2X3NNXYaLh/1Hi5VWOclbp4FAoFAIBC7srsVbyCpNjVv92Vq+bVixswRCAQCgTiV3WGqO5TSKd5bMcoe+8A9CwQCgUAgdtfdc4q31LK9XJxWXSy7EQgEAoHYk92jzt/U1R3Wnnf93QgEAoFAvC27l4vNQ4AvX00y1+LmuxEIBAKBOJjd9e4r1ZZqrd5UVd2NQCAQCMS57F60gqUh9J42Upsr9Sa7EQgEAoHYn91XsaXa4v3dc/Gd+7vV3QgEAoFAnMruqpSu4r0aUdffjUAgEAjEO7L7Wk115ybv+c/bKLu6G4FAIBCII9md+7zmf/X0HrG0qXmr3uTtWSAQCAQCsSG7qyP0jV3Fu8WqYfWh7kYgEAgE4kjdnU7kEfBUlfd60tueqAgEAoFAHMjuZcmdwvo28139D0DdjUAgEAjEkewO0bvs716+8bvdL5HdCAQCgUCczu60E+pVLDYP7/k2341AIBAIxNuzu9qlZbH5eV7x5lkgEAgEArEru/N8d6qnQ2dYT3V3KNJlNwKBQCAQ27L7dUGexswXLwdNLeCyG4FAIBCIHdm97xgIBAKBQCAQCAQCgUAgEAgEAoFA/AjiA6V9DBRIEyCtAAAAAElFTkSuQmCC" alt="QR code linking to https://jsundram.github.io/boccherini-sampler/" width="360" height="360">
+    <p class="url">https://jsundram.github.io/boccherini-sampler/</p>
+    <p class="hint">Point your phone camera at the code, or type the address above.</p>
+  </main>
+</body>
+</html>
