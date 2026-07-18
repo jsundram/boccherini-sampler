@@ -65,26 +65,27 @@ GROUPS = {
     "Group 1": {
         "subtitle": "Harder cello",
         "players": "Jason / Leah, Kath, Josh",
+        # (title, slug, sources, source-label, cello-difficulty or None)
         "pieces": [
-            ("Op. 8 No. 2 (G.166)",  "Op08-No2-G166", lily(8, 2, 166),  "LilyPond"),
-            ("Op. 15 No. 4 (G.180)", "Op15-No4-G180", lily(15, 4, 180), "LilyPond"),
-            ("Op. 22 No. 4 (G.186)", "Op22-No4-G186", lily(22, 4, 186), "LilyPond"),
-            ("Op. 24 No. 4 (G.192)", "Op24-No4-G192", lily(24, 4, 192), "LilyPond"),
-            ("Op. 33 No. 5 (G.211)", "Op33-No5-G211", op33_5(),         "IMSLP"),
-            ("Op. 58 No. 5 (G.246)", "Op58-No5-G246", km58(5),          "IMSLP"),
+            ("Op. 8 No. 2 (G.166)",  "Op08-No2-G166", lily(8, 2, 166),  "LilyPond", None),
+            ("Op. 15 No. 4 (G.180)", "Op15-No4-G180", lily(15, 4, 180), "LilyPond", 1),
+            ("Op. 22 No. 4 (G.186)", "Op22-No4-G186", lily(22, 4, 186), "LilyPond", 2),
+            ("Op. 24 No. 4 (G.192)", "Op24-No4-G192", lily(24, 4, 192), "LilyPond", 4),
+            ("Op. 33 No. 5 (G.211)", "Op33-No5-G211", op33_5(),         "IMSLP",    3),
+            ("Op. 58 No. 5 (G.246)", "Op58-No5-G246", km58(5),          "IMSLP",    2),
         ],
     },
     "Group 2": {
         "subtitle": "Easier cello",
         "players": "Casey / Stephen, Jon, Zon",
         "pieces": [
-            ("Op. 2 No. 6 (G.164)",  "Op02-No6-G164", lily(2, 6, 164),  "LilyPond"),
-            ("Op. 8 No. 1 (G.165)",  "Op08-No1-G165", lily(8, 1, 165),  "LilyPond"),
-            ("Op. 8 No. 3 (G.167)",  "Op08-No3-G167", lily(8, 3, 167),  "LilyPond"),
-            ("Op. 15 No. 1 (G.177)", "Op15-No1-G177", lily(15, 1, 177), "LilyPond"),
-            ("Op. 24 No. 6 (G.194)", "Op24-No6-G194", lily(24, 6, 194), "LilyPond"),
-            ("Op. 44 No. 4 (G.223)", "Op44-No4-G223", imslp_individual(44, 4, 223), "IMSLP"),
-            ("Op. 58 No. 4 (G.245)", "Op58-No4-G245", km58(4),          "IMSLP"),
+            ("Op. 2 No. 6 (G.164)",  "Op02-No6-G164", lily(2, 6, 164),  "LilyPond", 2),
+            ("Op. 8 No. 1 (G.165)",  "Op08-No1-G165", lily(8, 1, 165),  "LilyPond", 1),
+            ("Op. 8 No. 3 (G.167)",  "Op08-No3-G167", lily(8, 3, 167),  "LilyPond", 1),
+            ("Op. 15 No. 1 (G.177)", "Op15-No1-G177", lily(15, 1, 177), "LilyPond", 2),
+            ("Op. 24 No. 6 (G.194)", "Op24-No6-G194", lily(24, 6, 194), "LilyPond", 1),
+            ("Op. 44 No. 4 (G.223)", "Op44-No4-G223", imslp_individual(44, 4, 223), "IMSLP", 1),
+            ("Op. 58 No. 4 (G.245)", "Op58-No4-G245", km58(4),          "IMSLP",    3),
         ],
     },
 }
@@ -138,7 +139,7 @@ def main():
         gslug = gname.replace(" ", "")
         for inst in INSTRUMENTS:
             writer = PdfWriter()
-            for title, slug, sources, _lbl in g["pieces"]:
+            for title, slug, sources, _lbl, _diff in g["pieces"]:
                 src, rng = sources[inst]
                 if not src.exists():
                     missing.append(str(src))
@@ -192,6 +193,14 @@ def write_qr():
 
 
 # ---------------------------------------------------------------------------
+def pips(diff):
+    """Difficulty as filled/empty dots + 'n/5' (or an em dash if unrated)."""
+    if not diff:
+        return '<span class="pips">·····</span> <span class="nd">n/a</span>'
+    dots = f'<span class="on">{"●" * diff}</span>{"●" * (5 - diff)}'
+    return f'<span class="pips">{dots}</span> {diff}/5'
+
+
 def write_index(bundle_pages):
     def esc(s):
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -208,14 +217,15 @@ def write_index(bundle_pages):
                 f'<span class="pp">{pp} pp · PDF</span></a>'
             )
         rows = []
-        for title, slug, _sources, lbl in g["pieces"]:
+        for title, slug, _sources, lbl, diff in g["pieces"]:
             links = " ".join(
                 f'<a href="pieces/{slug}-{inst}.pdf" download>{inst}</a>'
                 for inst in INSTRUMENTS
             )
             rows.append(
-                f'<tr><td class="pc">{esc(title)}</td>'
-                f'<td class="src">{lbl}</td>'
+                f'<tr><td class="pc">{esc(title)}'
+                f'<span class="meta">{lbl}</span></td>'
+                f'<td class="diff">{pips(diff)}</td>'
                 f'<td class="lk">{links}</td></tr>'
             )
         sections.append(f"""
@@ -230,8 +240,8 @@ def write_index(bundle_pages):
       </div>
       <details>
         <summary>{len(g['pieces'])} works — individual parts</summary>
-        <table>
-          <thead><tr><th>Work</th><th>Source</th><th>Parts</th></tr></thead>
+        <table class="btbl">
+          <thead><tr><th>Work</th><th>Cello diff.</th><th>Parts</th></tr></thead>
           <tbody>{''.join(rows)}</tbody>
         </table>
       </details>
@@ -250,8 +260,6 @@ def write_index(bundle_pages):
     def bonus_card(label, tag, works):
         rows = []
         for title, slug, _src, _lbl, diff, key, dur in works:
-            pips = (f'<span class="on">{"●" * diff}</span>'
-                    f'{"●" * (5 - diff)}')
             links = " ".join(
                 f'<a href="pieces/{slug}-{inst}.pdf" download>{inst}</a>'
                 for inst in INSTRUMENTS
@@ -259,8 +267,7 @@ def write_index(bundle_pages):
             rows.append(
                 f'<tr><td class="pc">{esc(title)}'
                 f'<span class="meta">{esc(key)} · {esc(dur)}</span></td>'
-                f'<td class="diff" title="Cello difficulty {diff}/5">'
-                f'<span class="pips">{pips}</span> {diff}/5</td>'
+                f'<td class="diff">{pips(diff)}</td>'
                 f'<td class="lk">{links}</td></tr>'
             )
         return f"""
@@ -381,6 +388,7 @@ table.btbl td.pc .meta{display:block;font-weight:400;color:var(--muted);font-siz
 table.btbl td.diff{white-space:nowrap;color:var(--muted);font-size:.8rem;}
 .pips{letter-spacing:1px;color:var(--line);}
 .pips .on{color:var(--accent);}
+.nd{color:var(--muted);font-size:.78rem;font-style:italic;}
 table.btbl td.lk{white-space:nowrap;text-align:right;}
 table.btbl td.lk a{display:inline-block;min-width:26px;text-align:center;text-decoration:none;
   color:var(--accent);font-weight:600;padding:2px 5px;border-radius:6px;}
@@ -433,8 +441,9 @@ h1{font:600 2.2rem/1.05 Georgia,"Times New Roman",serif;margin:0 0 6px;}
 .qr{width:70%;max-width:340px;height:auto;margin:0 auto;display:block;
   border-radius:12px;background:#fff;padding:14px;
   box-shadow:0 1px 0 rgba(0,0,0,.06);}
-.url{margin:22px auto 0;font:600 1rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  color:var(--ink);word-break:break-all;max-width:420px;}
+.url{margin:22px auto 0;font:600 .72rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--ink);white-space:nowrap;}
+@media(min-width:600px){ .url{font-size:1rem;} }
 .hint{color:var(--muted);font-size:.9rem;margin-top:8px;}
 @media print{
   @page{ size:letter; margin:0.6in; }
