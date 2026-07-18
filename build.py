@@ -29,6 +29,8 @@ KM = SCORES / "Boccherini-KM"
 INSTRUMENTS = ["V1", "V2", "VA", "VC"]
 
 SITE_URL = "https://jsundram.github.io/boccherini-sampler/"
+DESC = ("Download your Boccherini string-quartet parts — one PDF per instrument "
+        "for each group, plus bonus quartets graded by cello difficulty.")
 DIFFICULTY_URL = ("https://docs.google.com/spreadsheets/d/"
                   "1QsMy2oQVhYf2KTSVJVKT4CxvkMuD9i87AHJLUqsRMUA/edit?gid=0#gid=0")
 FLOATING = "Roberta / Grant"  # play with either group
@@ -295,7 +297,9 @@ def write_index(bundle_pages):
     html = (TEMPLATE
             .replace("__SECTIONS__", body)
             .replace("__BONUS__", bonus_html)
-            .replace("__DIFFICULTY_URL__", DIFFICULTY_URL))
+            .replace("__DIFFICULTY_URL__", DIFFICULTY_URL)
+            .replace("__DESC__", esc(DESC))
+            .replace("__SITE_URL__", SITE_URL))
     (HERE / "index.html").write_text(html, encoding="utf-8")
     print("index.html written")
 
@@ -306,6 +310,24 @@ TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Boccherini Sampler</title>
+<meta name="description" content="__DESC__">
+<link rel="canonical" href="__SITE_URL__">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
+<meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17140f" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Boccherini Sampler">
+<meta property="og:title" content="Boccherini Sampler">
+<meta property="og:description" content="__DESC__">
+<meta property="og:url" content="__SITE_URL__">
+<meta property="og:image" content="__SITE_URL__assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Boccherini Sampler">
+<meta name="twitter:description" content="__DESC__">
+<meta name="twitter:image" content="__SITE_URL__assets/og.png">
 <style>
 :root{
   --bg:#f4efe6; --panel:#fbf8f2; --ink:#241f1a; --muted:#6f6455;
@@ -426,6 +448,9 @@ QR_TEMPLATE = """<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Boccherini Sampler — Scan</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
+<meta name="theme-color" content="#f4efe6">
 <style>
 :root{ --ink:#241f1a; --muted:#6f6455; --accent:#7c2932; --bg:#f4efe6; }
 *{box-sizing:border-box}
