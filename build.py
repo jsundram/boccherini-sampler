@@ -50,8 +50,10 @@ def km58(no):
     return {p: (KM / f"Boccherini Quartet Op 58 No {no} {names[p]}.pdf", None)
             for p in INSTRUMENTS}
 
-# op33/5 split from the whole-opus IMSLP bundle (pages verified visually)
-OP33_5_RANGES = {"V1": (15, 18), "V2": (9, 10), "VA": (9, 10), "VC": (9, 10)}
+# op33/5 split from the whole-opus IMSLP bundle. Page ranges verified at
+# readable resolution for every part (n°5 title -> just before the n°6 title).
+# NB: V2's n°5 runs 3 pages (9-11); the viola/cello run only 2 (9-10).
+OP33_5_RANGES = {"V1": (15, 18), "V2": (9, 11), "VA": (9, 10), "VC": (9, 10)}
 def op33_5():
     return {p: (IMSLP / f"Boccherini-033-all-{p}.pdf", OP33_5_RANGES[p])
             for p in INSTRUMENTS}
