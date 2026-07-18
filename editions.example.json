@@ -1,0 +1,128 @@
+{
+  "schema": "boccherini-editions/v1",
+  "generated": "2026-07-18",
+  "parts_base": "",
+  "_comment": "Illustrative sample (4 works) showing every `form`. Page counts are REAL, from the current files. Produced by boccherini-quartet-data; consumed + verified by boccherini-sampler. Catalog fields live in opera.json — join by `gerard`.",
+  "works": {
+    "166": {
+      "gerard": 166,
+      "opus": 8,
+      "number": 2,
+      "editions": [
+        {
+          "id": "philhar-lilypond",
+          "label": "Philhar / LilyPond",
+          "form": "per-work-parts",
+          "provenance": {
+            "source": "le-concert.pagesperso-orange.fr (IMSLP user Philhar), via boccherini-quartet-data/lilypond",
+            "license": "CC BY-NC 4.0",
+            "typeset": "lilypond",
+            "text": true
+          },
+          "parts": {
+            "V1":    { "file": "lilypond/Boccherini-008-2-G166-V1.pdf",    "pages": 6 },
+            "V2":    { "file": "lilypond/Boccherini-008-2-G166-V2.pdf",    "pages": 6 },
+            "VA":    { "file": "lilypond/Boccherini-008-2-G166-VA.pdf",    "pages": 3 },
+            "VC":    { "file": "lilypond/Boccherini-008-2-G166-VC.pdf",    "pages": 3 },
+            "score": { "file": "lilypond/Boccherini-008-2-G166-score.pdf", "pages": 16 }
+          }
+        },
+        {
+          "id": "km-scan",
+          "label": "KM (engraving scan)",
+          "form": "per-work-parts",
+          "provenance": {
+            "source": "KM edition scans",
+            "license": "Public Domain",
+            "typeset": "engraving-scan",
+            "text": false
+          },
+          "parts": {
+            "V1": { "file": "km/Boccherini Quartet Op 8 No 2 violin 1.pdf", "pages": 5 },
+            "V2": { "file": "km/Boccherini Quartet Op 8 No 2 violin 2.pdf", "pages": 5 },
+            "VA": { "file": "km/Boccherini Quartet Op 8 No 2 viola.pdf",    "pages": 4 },
+            "VC": { "file": "km/Boccherini Quartet Op 8 No 2 cello.pdf",    "pages": 4 }
+          }
+        }
+      ]
+    },
+
+    "211": {
+      "gerard": 211,
+      "opus": 33,
+      "number": 5,
+      "editions": [
+        {
+          "id": "philhar-lilypond-opus-bundle",
+          "label": "Philhar / LilyPond (Op.33 whole-opus part books)",
+          "form": "opus-bundle",
+          "provenance": {
+            "source": "boccherini-quartet-data/lilypond Op.33 part books (one PDF per instrument, all 6 quartets)",
+            "license": "CC BY-NC 4.0",
+            "typeset": "lilypond",
+            "text": true
+          },
+          "_comment": "This is the exact case behind tonight's bug: parts are page-ranges within a multi-work file, and each part runs a DIFFERENT length. source_pages length MUST equal pages; the sampler asserts it.",
+          "parts": {
+            "V1": { "file": "imslp/Boccherini-033-all-V1.pdf", "source_pages": [15, 18], "pages": 4 },
+            "V2": { "file": "imslp/Boccherini-033-all-V2.pdf", "source_pages": [9, 11],  "pages": 3 },
+            "VA": { "file": "imslp/Boccherini-033-all-VA.pdf", "source_pages": [9, 10],  "pages": 2 },
+            "VC": { "file": "imslp/Boccherini-033-all-VC.pdf", "source_pages": [9, 10],  "pages": 2 }
+          }
+        }
+      ]
+    },
+
+    "223": {
+      "gerard": 223,
+      "opus": 44,
+      "number": 4,
+      "editions": [
+        {
+          "id": "imslp",
+          "label": "IMSLP (individual parts) — \"La Tirana\"",
+          "form": "per-work-parts",
+          "provenance": {
+            "source": "https://imslp.org/wiki/String_Quartet_in_G_major,_G.223_(Boccherini,_Luigi)",
+            "license": "Public Domain",
+            "typeset": "engraving-scan",
+            "text": false
+          },
+          "parts": {
+            "V1":    { "file": "imslp/Boccherini-044-4-G223-V1.pdf",    "pages": 4 },
+            "V2":    { "file": "imslp/Boccherini-044-4-G223-V2.pdf",    "pages": 4 },
+            "VA":    { "file": "imslp/Boccherini-044-4-G223-VA.pdf",    "pages": 4 },
+            "VC":    { "file": "imslp/Boccherini-044-4-G223-VC.pdf",    "pages": 4 },
+            "score": { "file": "imslp/Boccherini-044-4-G223-score.pdf", "pages": 15 }
+          }
+        }
+      ]
+    },
+
+    "246": {
+      "gerard": 246,
+      "opus": 58,
+      "number": 5,
+      "editions": [
+        {
+          "id": "km-scan",
+          "label": "KM (engraving scan) — \"Le Cornamuse\"",
+          "form": "per-work-parts",
+          "provenance": {
+            "source": "KM edition scans",
+            "license": "Public Domain",
+            "typeset": "engraving-scan",
+            "text": false
+          },
+          "_comment": "Image-only: `text` is false, so `pages` is the ONLY completeness signal — exactly why the producer must declare it.",
+          "parts": {
+            "V1": { "file": "km/Boccherini Quartet Op 58 No 5 violin 1.pdf", "pages": 11 },
+            "V2": { "file": "km/Boccherini Quartet Op 58 No 5 violin 2.pdf", "pages": 8 },
+            "VA": { "file": "km/Boccherini Quartet Op 58 No 5 viola.pdf",    "pages": 7 },
+            "VC": { "file": "km/Boccherini Quartet Op 58 No 5 cello.pdf",    "pages": 9 }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jsundram/boccherini-sampler/blob/main/editions.schema.json",
+  "title": "Boccherini editions manifest",
+  "description": "Contract between boccherini-quartet-data (producer) and boccherini-sampler (consumer). For every quartet it enumerates the available editions and their per-part completeness facts, so the sampler can assemble and verify bundles WITHOUT re-deriving anything from filenames or page content. Catalog metadata (title, key, movements, year, links) is NOT duplicated here — join to opera.json by `gerard`.",
+  "type": "object",
+  "required": [
+    "schema",
+    "works"
+  ],
+  "additionalProperties": false,
+  "patternProperties": {
+    "^_": {}
+  },
+  "properties": {
+    "schema": {
+      "const": "boccherini-editions/v1",
+      "description": "Schema id + version. Bump on any breaking change."
+    },
+    "generated": {
+      "type": "string",
+      "description": "ISO-8601 date the manifest was produced (informational)."
+    },
+    "parts_base": {
+      "type": "string",
+      "description": "Base URL or filesystem path that each part `file` is resolved against. Empty/absent means `file` values are already resolvable on their own (absolute path/URL, or relative to the manifest)."
+    },
+    "works": {
+      "type": "object",
+      "description": "Map of Gérard catalog number (as a string) -> work.",
+      "propertyNames": {
+        "pattern": "^[0-9]+$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/work"
+      }
+    }
+  },
+  "$defs": {
+    "work": {
+      "type": "object",
+      "required": [
+        "gerard",
+        "editions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "gerard": {
+          "type": "integer",
+          "description": "Gérard number; MUST equal the map key."
+        },
+        "opus": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Opus number — convenience/sanity only; the catalog truth is opera.json."
+        },
+        "number": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Work number within the opus (Op.X No.Y), if the work has one."
+        },
+        "editions": {
+          "type": "array",
+          "minItems": 1,
+          "description": "All known editions/sources for this work. Order is not significant; the sampler chooses which to use (edition preference is a sampler input, never hardcoded here).",
+          "items": {
+            "$ref": "#/$defs/edition"
+          }
+        }
+      },
+      "patternProperties": {
+        "^_": {}
+      }
+    },
+    "edition": {
+      "type": "object",
+      "required": [
+        "id",
+        "form",
+        "parts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Stable slug, unique within the work (e.g. 'philhar-lilypond', 'km-scan', 'sieber')."
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable edition name for the UI (e.g. 'Philhar / LilyPond', 'KM (engraving scan)')."
+        },
+        "form": {
+          "enum": [
+            "per-work-parts",
+            "opus-bundle",
+            "score-only"
+          ],
+          "description": "per-work-parts: each part resolves to its own PDF. opus-bundle: parts are page-ranges inside multi-work files (every part MUST set source_pages). score-only: a full score exists but no separated parts (parts has only 'score')."
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "parts": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Map of part label -> unit. Only the parts that actually exist appear (an edition may be missing a part, or be score-only).",
+          "propertyNames": {
+            "enum": [
+              "V1",
+              "V2",
+              "VA",
+              "VC",
+              "score"
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/part"
+          }
+        }
+      },
+      "patternProperties": {
+        "^_": {}
+      }
+    },
+    "part": {
+      "type": "object",
+      "required": [
+        "file",
+        "pages"
+      ],
+      "additionalProperties": false,
+      "description": "One atomic, COMPLETE part. The sampler's completeness invariant: the resolved PDF (or the extracted source_pages range) has exactly `pages` pages. This is what makes 'no missing pages' checkable for any source, scans included.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path/URL to the source PDF, resolved against parts_base."
+        },
+        "pages": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Authoritative complete page count of this part. THE completeness fact."
+        },
+        "source_pages": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "1-based inclusive [start, end] range within `file` to extract, when this part lives inside a multi-work bundle. (end - start + 1) MUST equal `pages`. Omit when `file` is already a standalone part."
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Optional SHA-256 of the resolved part (whole file or extracted range) for drift detection between the two repos."
+        }
+      },
+      "patternProperties": {
+        "^_": {}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Where this edition came from and its nature — for attribution, licensing, and trust.",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Human description and/or URL of origin (IMSLP work page, library, archive)."
+        },
+        "publisher": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "e.g. 'Public Domain', 'CC BY-NC 4.0'."
+        },
+        "typeset": {
+          "enum": [
+            "lilypond",
+            "engraving-scan",
+            "manuscript",
+            "modern-print",
+            "other"
+          ],
+          "description": "How the notation was produced."
+        },
+        "text": {
+          "type": "boolean",
+          "description": "true if the PDF has extractable text (boundaries are machine-checkable); false for image-only scans, where the declared `pages` count is the only completeness signal."
+        }
+      },
+      "patternProperties": {
+        "^_": {}
+      }
+    }
+  }
+}
