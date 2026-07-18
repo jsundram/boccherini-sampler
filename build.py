@@ -467,8 +467,12 @@ h1{font:600 2.2rem/1.05 Georgia,"Times New Roman",serif;margin:0 0 6px;}
   border-radius:12px;background:#fff;padding:14px;
   box-shadow:0 1px 0 rgba(0,0,0,.06);}
 .url{margin:22px auto 0;font:600 .72rem/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  color:var(--ink);white-space:nowrap;}
+  white-space:nowrap;}
 @media(min-width:600px){ .url{font-size:1rem;} }
+.url a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);
+  padding-bottom:2px;}
+.url a:hover{color:var(--accent);border-color:var(--accent);}
+.card>a{display:inline-block;text-decoration:none;-webkit-tap-highlight-color:transparent;}
 .hint{color:var(--muted);font-size:.9rem;margin-top:8px;}
 @media print{
   @page{ size:letter; margin:0.6in; }
@@ -489,8 +493,8 @@ h1{font:600 2.2rem/1.05 Georgia,"Times New Roman",serif;margin:0 0 6px;}
     <p class="eyebrow">String Quartets · Reading Party</p>
     <h1>Boccherini Sampler</h1>
     <p class="sub">Scan to download your parts</p>
-    <img class="qr" src="__QR__" alt="QR code linking to __URL__" width="360" height="360">
-    <p class="url">__URL__</p>
+    <a href="__URL__"><img class="qr" src="__QR__" alt="QR code linking to __URL__" width="360" height="360"></a>
+    <p class="url"><a href="__URL__">__URL__</a></p>
     <p class="hint">Point your phone camera at the code, or type the address above.</p>
   </main>
 </body>
