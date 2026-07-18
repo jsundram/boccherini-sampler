@@ -15,6 +15,7 @@ Sources (relative to the parent Scores/ directory):
 Run from anywhere; paths are resolved relative to this file.
 """
 
+import re
 import shutil
 from pathlib import Path
 from pypdf import PdfReader, PdfWriter
@@ -50,12 +51,49 @@ def km58(no):
     return {p: (KM / f"Boccherini Quartet Op 58 No {no} {names[p]}.pdf", None)
             for p in INSTRUMENTS}
 
-# op33/5 split from the whole-opus IMSLP bundle. Page ranges verified at
-# readable resolution for every part (n°5 title -> just before the n°6 title).
-# NB: V2's n°5 runs 3 pages (9-11); the viola/cello run only 2 (9-10).
-OP33_5_RANGES = {"V1": (15, 18), "V2": (9, 11), "VA": (9, 10), "VC": (9, 10)}
+# --- self-verifying whole-opus split ---------------------------------------
+# A quartet title page prints e.g. "53 ème Quatuor op.33 n°5 - G.211". That line
+# appears ONLY on title pages (never on interior/footer pages), so we DERIVE each
+# quartet's page range from the printed titles instead of hand-typing it. This is
+# what makes silent truncation impossible: a segment is always [title_n .. title_{n+1}-1],
+# built from the real titles, and the count of titles is asserted. See verify_splits().
+_TITLE_RE = re.compile(r"op\.\s*(\d+)\s*n[°ºo]\s*(\d+)\s*-\s*G\.?\s*(\d+)", re.I)
+
+def _title_pages(path):
+    """[(page_index0, opus, number, g)] for each quartet title page; also (npages, n_empty)."""
+    reader = PdfReader(str(path))
+    hits, empty = [], 0
+    for i, pg in enumerate(reader.pages):
+        txt = pg.extract_text() or ""
+        if not txt.strip():
+            empty += 1
+        m = _TITLE_RE.search(txt)
+        if m:
+            hits.append((i, int(m.group(1)), int(m.group(2)), int(m.group(3))))
+    return hits, len(reader.pages), empty
+
+def bundle_segment(path, number, expect_count):
+    """1-based inclusive page range for quartet `number` in a whole-opus bundle,
+    derived from the printed title pages. Raises (fails the build) on any anomaly."""
+    hits, npages, empty = _title_pages(path)
+    if empty:
+        raise SystemExit(f"{path.name}: {empty} page(s) have no extractable text — "
+                         f"this bundle is probably image-only and needs OCR before it can be split.")
+    if len(hits) != expect_count:
+        raise SystemExit(f"{path.name}: found {len(hits)} quartet titles, expected {expect_count} "
+                         f"(numbers seen: {[h[2] for h in hits]}).")
+    if hits[0][0] != 0:
+        raise SystemExit(f"{path.name}: bundle does not start on a quartet title page.")
+    starts = [h[0] for h in hits] + [npages]   # sentinel = end of file
+    for idx, (i, _op, num, _g) in enumerate(hits):
+        if num == number:
+            return (i + 1, starts[idx + 1])    # [title .. just before next title]
+    raise SystemExit(f"{path.name}: quartet n°{number} not found (have {[h[2] for h in hits]}).")
+
 def op33_5():
-    return {p: (IMSLP / f"Boccherini-033-all-{p}.pdf", OP33_5_RANGES[p])
+    # Op.33 whole-opus bundle = 6 quartets; ranges computed + verified per instrument.
+    return {p: (IMSLP / f"Boccherini-033-all-{p}.pdf",
+                bundle_segment(IMSLP / f"Boccherini-033-all-{p}.pdf", 5, expect_count=6))
             for p in INSTRUMENTS}
 
 def leduc39():
@@ -181,9 +219,54 @@ def main():
             print("  ", m)
         raise SystemExit(1)
 
+    verify_splits()
     write_index(bundle_pages)
     write_qr()
     print("\nBuild OK")
+
+
+def verify_splits():
+    """Audit every page-range split. Truncation is only possible on a split (all
+    other sources are used whole), so this is the single place that guarantee lives.
+
+    For a text-bearing bundle we re-derive the boundary from the printed titles and
+    assert our range matches exactly (first page IS the work's title; the page right
+    after is the NEXT work's title or end-of-file). An image-only bundle has no text
+    to check, so it FAILS CLOSED here: a split of an un-verifiable source stops the
+    build rather than silently shipping a wrong range (add OCR, or use whole parts)."""
+    ranged = {}  # (path, range, number) collected from every piece
+    for g in GROUPS.values():
+        for title, _slug, sources, _lbl, *_ in g["pieces"]:
+            num = int(re.search(r"No\.?\s*(\d+)", title).group(1)) if "No" in title else None
+            for inst in INSTRUMENTS:
+                src, rng = sources[inst]
+                if rng is not None:
+                    ranged[(src, rng, num, inst)] = title
+
+    print("\n-- split verification --")
+    for (src, (a, b), num, inst), title in sorted(ranged.items(), key=lambda k: str(k[0][0])):
+        reader = PdfReader(str(src))
+        head = reader.pages[a - 1].extract_text() or ""
+        if not head.strip():
+            raise SystemExit(
+                f"VERIFY FAIL: {src.name} [{inst}] {title}: page {a} has no extractable "
+                f"text — image-only bundle can't be auto-verified. Add OCR or use whole parts.")
+        hm = _TITLE_RE.search(head)
+        if not hm or (num is not None and int(hm.group(2)) != num):
+            raise SystemExit(f"VERIFY FAIL: {src.name} [{inst}] {title}: page {a} is not this "
+                             f"work's title page (found {hm.group(0) if hm else 'no title'}).")
+        if b < len(reader.pages):
+            after = reader.pages[b].extract_text() or ""
+            am = _TITLE_RE.search(after)
+            if not am:
+                raise SystemExit(
+                    f"VERIFY FAIL: {src.name} [{inst}] {title}: the page after the range "
+                    f"(p{b + 1}) is not a new-quartet title — a page was likely dropped or added.")
+            boundary = f"then {am.group(0)}"
+        else:
+            boundary = "then <end of file>"
+        print(f"  {title:22} [{inst}] {src.name}  pp{a}-{b} ({b - a + 1}p)  "
+              f"| {hm.group(0)} {boundary}")
 
 
 def write_qr():

@@ -37,6 +37,27 @@ The remaining works use public-domain IMSLP material:
 - **Op. 44 No. 4** — individual IMSLP parts.
 - **Op. 58 Nos. 4 & 5** — individual parts (KM edition).
 
+## How part-truncation is prevented
+
+A part can only be truncated on a **page-range split** — every other source is
+used whole (all its pages), so it's structurally safe. There is one split today
+(Op. 33/5, carved out of a whole-opus bundle). The build protects it two ways:
+
+1. **Derive, don't type.** Each quartet's page range is computed from the printed
+   title lines ("53 ème Quatuor op.33 n°5 - G.211"), which appear only on title
+   pages. A segment is always `[title_n … title_{n+1}−1]`, and the number of
+   titles found is asserted (`bundle_segment`). A hand-typed off-by-one is gone.
+2. **Verify at build time** (`verify_splits`, prints a report). For every split it
+   asserts the first page IS the work's title and the page right after is the NEXT
+   work's title (or end-of-file). The earlier bug — V2 ranged 9–10 instead of
+   9–11 — fails this check because page 11 isn't a new title.
+
+**Heterogeneous sources:** this only works because the Op. 33 bundle is
+LilyPond-typeset with embedded text. Scans / old engravings (KM, LeDuc, true
+IMSLP scans) have no reliable text, so `verify_splits` **fails the build closed**
+if asked to split one — the fix is to add OCR or use whole per-work parts instead
+of silently trusting a typed range. (No image-only bundle is split today.)
+
 ## Rebuilding
 
 `build.py` regenerates `parts/`, `pieces/`, and `index.html` from the source
